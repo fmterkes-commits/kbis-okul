@@ -1,0 +1,141 @@
+-<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-BİS | Öğretmen Paneli</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; color: #1e293b; }
+        .header { background: linear-gradient(90deg, #10b981 0%, #059669 100%); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .container { padding: 40px 20px; max-width: 800px; margin: auto; }
+        
+        /* Sade ve Temiz Bilgi Kutusu */
+        .info-box { background: white; border: 1px solid #e2e8f0; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .info-box h2 { margin: 0 0 10px 0; font-size: 16px; color: #1e3a8a; }
+        .info-box p { margin: 0; color: #475569; font-size: 13px; line-height: 1.6; }
+
+        /* Buton Kartları - SADE TASARIM */
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn-card { display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; border: 1px solid #e2e8f0; padding: 35px 20px; border-radius: 12px; text-decoration: none; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .btn-card:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.08); }
+        
+        .icon { font-size: 40px; margin-bottom: 15px; }
+        .btn-card h3 { margin: 0 0 8px 0; font-size: 17px; }
+        .btn-card p { margin: 0; font-size: 13px; color: #64748b; text-align: center; }
+
+        .card-risk { border-bottom: 4px solid #ef4444; }
+        .card-risk h3 { color: #ef4444; }
+        
+        .card-ariza { border-bottom: 4px solid #f59e0b; }
+        .card-ariza h3 { color: #d97706; }
+
+        .success-msg { background: #10b981; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center; font-size: 14px; }
+        .error-msg { background: #ef4444; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center; font-size: 14px; }
+
+        /* Mobilde alt alta geçmesi için */
+        @media (max-width: 600px) {
+            .action-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- SOL KISIM: LOGO + BAŞLIK + OKUL ADI -->
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="/static/logo.jpg" style="width: 60px; height: 60px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <div>
+                <h1 style="margin: 0; font-size: 24px;">K-BİS Öğretmen Paneli</h1>
+                <p style="margin: 4px 0 0 0; opacity: 0.95; font-size: 13px; font-weight: bold; letter-spacing: 0.5px;">KÜÇÜKYALI MESLEKİ VE TEKNİK ANADOLU LİSESİ</p>
+            </div>
+        </div>
+
+        <!-- SAĞ KISIM: KULLANICI BİLGİSİ -->
+        <div style="text-align: right;">
+            <p style="margin: 0 0 5px 0; font-size: 13px; opacity: 0.9;">Hoş geldiniz,</p>
+            <strong style="display: block; font-size: 16px;">{{ kullanici.ad_soyad }}</strong>
+            <a href="/" style="color: white; text-decoration: underline; font-size: 13px; display: inline-block; margin-top: 5px;">Güvenli Çıkış</a>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        {% if mesaj %}
+            {% if '❌' in mesaj %}
+                <div class="error-msg">{{ mesaj }}</div>
+            {% else %}
+                <div class="success-msg">{{ mesaj }}</div>
+            {% endif %}
+        {% endif %}
+
+        <!-- K-BİS NEDİR BİLGİ KUTUSU -->
+        <div class="info-box">
+            <h2>ℹ️ K-BİS Nedir?</h2>
+            <p><strong>Kurumsal Bildirim ve İşleyiş Sistemi (K-BİS)</strong>, okulumuzdaki donanım arızalarını ve iş sağlığı/güvenliği (İSG) risklerini yetkili birimlere hızlıca iletmenizi sağlayan resmi platformdur. Yaptığınız bildirimler anında ilgili müdür yardımcılarına ve saha sorumlularına iletilerek resmi iş emrine dönüştürülür.</p>
+        </div>
+
+        <!-- BUTON KARTLARI (SADE VE İKONLU) -->
+        <h3 style="margin-bottom: 20px; color: #334155; text-align: center; font-size: 16px;">Lütfen bildirmek istediğiniz durumu seçin:</h3>
+        <div class="action-grid">
+            <a href="/form/Risk?kullanici_id={{ kullanici.id }}" class="btn-card card-risk">
+                <div class="icon">⚠️</div>
+                <h3>İSG / Güvenlik Riski</h3>
+                <p>Tehlike arz eden acil durumları ve riskleri idareye bildirin.</p>
+            </a>
+            
+            <a href="/form/Arıza?kullanici_id={{ kullanici.id }}" class="btn-card card-ariza">
+                <div class="icon">🔧</div>
+                <h3>Donanım / Mekanik Arıza</h3>
+                <p>Bozulan cihazları, donanım veya elektrik arızalarını iletin.</p>
+            </a>
+        </div>
+
+        <!-- YENİ EKLENEN: GEÇMİŞ BİLDİRİMLER LİSTESİ -->
+        <div class="info-box" style="margin-top: 40px; border-left-color: #f59e0b; padding: 0; overflow: hidden;">
+            <h2 style="color: #d97706; padding: 20px 20px 10px 20px; margin: 0;">Geçmiş Bildirimlerim</h2>
+            <div style="max-height: 250px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                    <thead style="background: #f8fafc; position: sticky; top: 0;">
+                        <tr>
+                            <th style="padding: 12px 20px; border-bottom: 1px solid #e2e8f0; color: #475569;">Tarih</th>
+                            <th style="padding: 12px 20px; border-bottom: 1px solid #e2e8f0; color: #475569;">Tür / Konum</th>
+                            <th style="padding: 12px 20px; border-bottom: 1px solid #e2e8f0; color: #475569;">Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in gecmis_bildirimler %}
+                        <tr style="border-bottom: 1px solid #f1f5f9; background: white;">
+                            <td style="padding: 12px 20px; color: #334155;">{{ b.tarih }}</td>
+                            <td style="padding: 12px 20px;">
+                                <strong style="color: {% if b.tur == 'Risk' %}#ef4444{% else %}#d97706{% endif %}">{{ b.tur }}</strong><br>
+                                <span style="color: #64748b; font-size: 12px;">{{ b.bina_adi }} - {{ b.alan_adi }}</span>
+                            </td>
+                            <td style="padding: 12px 20px;">
+                                <span style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 11px; color: #475569; border: 1px solid #e2e8f0;">{{ b.durum }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if not gecmis_bildirimler %}
+                        <tr style="background: white;">
+                            <td colspan="3" style="padding: 20px; text-align: center; color: #94a3b8; font-style: italic;">Sistemde size ait geçmiş bir bildirim bulunmuyor.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- YENİ EKLENEN: ŞİFRE DEĞİŞTİRME FORMU -->
+        <div class="info-box" style="margin-top: 30px; border-left-color: #64748b;">
+            <h2 style="color: #475569;">🔑 Şifremi Değiştir</h2>
+            <p style="margin-bottom: 15px;">Hesap güvenliğiniz için şifrenizi güncelleyebilirsiniz.</p>
+            <form action="/sifre_degistir" method="POST" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="hidden" name="kullanici_id" value="{{ kullanici.id }}">
+                <input type="password" name="eski_sifre" placeholder="Mevcut Şifreniz" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; min-width: 150px; outline: none;">
+                <input type="password" name="yeni_sifre" placeholder="Yeni Şifreniz" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; min-width: 150px; outline: none;">
+                <button type="submit" style="background: #334155; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; transition: 0.2s;">Güncelle</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+sb_publishable_JrMGstjGWlAYvD-uqx2low_KZUH1ebu
+
+https://oamugwxmpixtuiclfzdl.supabase.co/rest/v1/
+
+postgresql://postgres:[YOUR-PASSWORD]@db.oamugwxmpixtuiclfzdl.supabase.co:5432/postgres
+

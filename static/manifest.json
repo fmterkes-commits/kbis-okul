@@ -1,0 +1,16 @@
+{
+  "name": "K-BİS",
+  "short_name": "K-BİS Mobil",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/static/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-BİS | Bildirim Formu</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; align-items: center; margin: 0; padding-bottom: 30px; }
+        .header { background-color: #3b82f6; color: white; padding: 20px; width: 100%; text-align: center; box-sizing: border-box; }
+        .form-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-top: 20px; width: 90%; max-width: 550px; box-sizing: border-box; }
+        label { font-weight: bold; color: #475569; display: block; margin-top: 15px; margin-bottom: 5px; }
+        select, textarea, input[type="file"] { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
+        .radio-group { display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
+        .radio-group label { margin-top: 0; font-weight: normal; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1; cursor: pointer; flex: 1; text-align: center; }
+        .btn-gonder { background: #10b981; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        .warning-box { background-color: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 15px; line-height: 1.4; }
+        .kvkk-box { background-color: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; padding: 10px; border-radius: 6px; font-size: 11px; margin-top: 20px; line-height: 1.3; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="margin: 0;">{{ tur }} Bildirimi Oluştur</h2>
+        <a href="/" style="color: white; font-size: 14px; text-decoration: underline; display: inline-block; margin-top: 5px;">İptal ve Geri Dön</a>
+    </div>
+    
+    <div class="form-container">
+        
+        <div class="warning-box">
+            <strong>⚠️ DİKKAT (KVKK Uyarısı):</strong><br>
+            Yükleyeceğiniz fotoğraflarda kesinlikle <b>öğrenci, öğretmen veya personel yüzü</b> yer almamalıdır. Yalnızca ilgili arızalı bölge çekilmelidir.
+        </div>
+
+        <form action="/bildirim_kaydet" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="tur" value="{{ tur }}">
+            <input type="hidden" name="kullanici_id" value="{{ kullanici_id }}">
+
+            <label>Bina Seçimi</label>
+            <select id="binaSecim" onchange="binaDegisti()" required>
+                <option value="">Lütfen Bina Seçin...</option>
+            </select>
+
+            <label>Alan / Konum Seçimi</label>
+            <select id="alanSecim" name="mekan_id" required disabled>
+                <option value="">Önce Bina Seçiniz</option>
+            </select>
+
+            <label>Aciliyet / Seviye</label>
+            <div class="radio-group">
+                {% if tur == 'Risk' %}
+                    <label><input type="radio" name="aciliyet" value="1" required> Az Riskli</label>
+                    <label><input type="radio" name="aciliyet" value="2"> Riskli</label>
+                    <label><input type="radio" name="aciliyet" value="3" style="accent-color: red;"> Çok Riskli</label>
+                {% else %}
+                    <label><input type="radio" name="aciliyet" value="1" required> Normal</label>
+                    <label><input type="radio" name="aciliyet" value="2"> Acil</label>
+                    <label><input type="radio" name="aciliyet" value="3" style="accent-color: red;"> Çok Acil</label>
+                {% endif %}
+            </div>
+
+            <label>Açıklama</label>
+            <textarea name="aciklama" rows="4" placeholder="Durumu detaylıca açıklayınız..." required></textarea>
+
+            <label>Fotoğraf (Opsiyonel)</label>
+            <input type="file" name="fotograf" accept="image/*">
+
+            <button type="submit" class="btn-gonder">🚀 BİLDİRİMİ GÖNDER</button>
+        </form>
+
+        <div class="kvkk-box">
+            <strong>🔒 KVKK Aydınlatma Metni:</strong> 6698 sayılı KVKK gereğince bu veriler yalnızca okulumuzun arıza/bakım süreçlerinin yürütülmesi amacıyla işlenmektedir.
+        </div>
+    </div>
+
+    <script>
+        const mekanlar = {{ mekanlar_json | safe }};
+        const binaSelect = document.getElementById("binaSecim");
+        const alanSelect = document.getElementById("alanSecim");
+
+        for (const bina in mekanlar) {
+            let option = document.createElement("option");
+            option.value = bina;
+            option.text = bina;
+            binaSelect.add(option);
+        }
+
+        function binaDegisti() {
+            const secilenBina = binaSelect.value;
+            alanSelect.innerHTML = '<option value="">Lütfen Alan Seçin...</option>';
+            if (secilenBina && mekanlar[secilenBina]) {
+                alanSelect.disabled = false;
+                mekanlar[secilenBina].forEach(alan => {
+                    let option = document.createElement("option");
+                    option.value = alan.id;
+                    option.text = alan.isim;
+                    alanSelect.add(option);
+                });
+            } else {
+                alanSelect.disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>

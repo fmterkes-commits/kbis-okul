@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-BİS | Görev ve Sorumluluk Paneli</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; color: #1e293b; }
+        .header { background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .container { padding: 30px; max-width: 1200px; margin: auto; }
+        .is-karti { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 5px solid #3b82f6; display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 20px; align-items: center; }
+        .is-karti.risk { border-left-color: #ef4444; }
+        .is-karti.ariza { border-left-color: #f59e0b; }
+        
+        .is-detay strong { color: #64748b; font-size: 13px; text-transform: uppercase; }
+        .is-detay p { margin: 5px 0 15px 0; font-size: 16px; font-weight: 500; }
+        
+        .aksiyon-form { background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+        .aksiyon-form input[type="text"], .aksiyon-form textarea, .aksiyon-form input[type="file"] { width: 100%; box-sizing: border-box; padding: 8px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; }
+        .btn-tamamla { background: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
+        .btn-tamamla:hover { background: #059669; }
+        
+        .btn-print { display: inline-block; background: #1e293b; color: white; text-decoration: none; padding: 10px 15px; border-radius: 6px; font-size: 13px; font-weight: bold; text-align: center; width: 100%; box-sizing: border-box; }
+        .btn-print:hover { background: #0f172a; }
+        .empty-state { text-align: center; color: #94a3b8; padding: 50px; background: white; border-radius: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+            <img src="/static/logo.jpg" style="width: 50px; height: 50px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <div>
+                <h1 style="margin: 0; font-size: 20px;">K-BİS</h1>
+                <p style="margin: 2px 0 0 0; opacity: 0.9; font-size: 12px;">Saha Yönetim Paneli</p>
+            </div>
+        </div>
+
+        <div style="flex: 2; text-align: center;">
+            <h2 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">Küçükyalı Mesleki ve Teknik Anadolu Lisesi</h2>
+        </div>
+
+        <div style="flex: 1; text-align: right;">
+            <strong style="display: block; font-size: 14px;">{{ kullanici.ad_soyad }}</strong>
+            <small style="font-size: 12px; opacity: 0.9;">{{ kullanici.rol }}</small><br>
+            <a href="/" style="color: white; text-decoration: underline; font-size: 13px;">Güvenli Çıkış</a>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if mesaj %}
+            <div style="background: #10b981; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; text-align: center;">{{ mesaj }}</div>
+        {% endif %}
+
+        <h2 style="color: #334155;">📋 Üzerinize Atanan Açık İşler</h2>
+
+        {% for islem in isler %}
+        <div class="is-karti {% if islem.tur == 'Risk' %}risk{% else %}ariza{% endif %}">
+            
+            <div class="is-bilgi">
+                <span style="background: {% if islem.tur == 'Risk' %}#ef4444{% else %}#f59e0b{% endif %}; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                    {{ islem.tur }} / {{ islem.seviye_metni }}
+                </span>
+                <h3 style="margin: 15px 0 5px 0; color: #1e293b;">{{ islem.bina_adi }}</h3>
+                <p style="margin: 0; color: #64748b;">{{ islem.kat }} - {{ islem.alan_adi }}</p>
+                <div style="margin-top: 15px; font-size: 12px; color: #94a3b8;">📅 Açılış: {{ islem.tarih }}</div>
+                <div style="margin-top: 5px; font-size: 12px; color: #64748b;">Bildiren: {{ islem.bildiren_kisi }}</div>
+            </div>
+
+            <div class="is-detay">
+                <strong>Sorun / Arıza Açıklaması</strong>
+                <p>{{ islem.aciklama }}</p>
+                
+                {% if islem.fotograf_yolu and islem.fotograf_yolu != 'None' and islem.fotograf_yolu != 'null' and islem.fotograf_yolu.strip() != '' %}
+                    <a href="{{ islem.fotograf_yolu }}" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 14px; font-weight: bold;">🖼️ Eklenen Fotoğrafı Gör</a>
+                {% endif %}
+            </div>
+
+            <div class="is-aksiyon">
+                
+                <div class="aksiyon-form" style="border-color: #3b82f6; background: #eff6ff;">
+                    <form action="/personel_ata" method="POST" style="display:flex; flex-direction:column; gap:8px;">
+                        <input type="hidden" name="bildirim_id" value="{{ islem.id }}">
+                        <input type="hidden" name="sef_id" value="{{ kullanici.id }}">
+                        <strong style="font-size: 12px; color: #1e3a8a;">1. Görevlendirilen Personel / Öğrenci:</strong>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" name="gorevlendirilen_personel" value="{{ islem.gorevlendirilen_personel if islem.gorevlendirilen_personel else '' }}" placeholder="İsim yazın (Örn: Ahmet Usta)..." required style="flex:1; margin-bottom:0;">
+                            <button type="submit" style="background:#3b82f6; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Kaydet</button>
+                        </div>
+                    </form>
+                    <a href="/is_emri_yazdir/{{ islem.id }}" target="_blank" class="btn-print" style="margin-top:10px;">🖨️ A4 İş Emri Çıktısı Al</a>
+                </div>
+                
+                <div class="aksiyon-form">
+                    <form action="/is_kapat" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="bildirim_id" value="{{ islem.id }}">
+                        
+                        <strong style="font-size: 12px; color: #475569;">2. Çözüm / Onarım Notu:</strong>
+                        <textarea name="sef_cozum_notu" rows="2" placeholder="Sorunu nasıl çözdüğünüzü buraya not düşün..." required></textarea>
+                        
+                        <strong style="font-size: 12px; color: #475569;">Onarılmış Hali (Opsiyonel):</strong>
+                        <input type="file" name="fotograf" accept="image/*">
+                        
+                        <button type="submit" class="btn-tamamla">✅ İşi Tamamla & İdareye Gönder</button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}
+
+        {% if not isler %}
+        <div class="empty-state">
+            <h2 style="margin: 0;">🎉 Harika!</h2>
+            <p>Şu anda üzerinize atanmış açık bir iş / arıza bulunmuyor.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
